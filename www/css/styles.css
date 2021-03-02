@@ -19,14 +19,16 @@ button{
 
 #downloadData,
 button{
-  background-color: #d2e69e !important;
+  background-color: #aa3b00 !important;
+  color: white !important;
+  font-weight: bold !important;
   box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
 }
 
 #downloadData:hover,
 button:hover{
   color: white !important;
-  background-color: #aa3b00 !important;
+  background-color: rgb(122, 255, 0) !important;
 }
 
 .nav{
@@ -42,21 +44,25 @@ button:hover{
 
 
 .nav li.active a{
-  background-color: rgba(209, 230, 157, 0.5) !important;
+  background-color: #d2e69e !important;
+  color:black !important;
+  font-weight: bold !important;
 }
 
 .nav li a{
-  color:black !important;
-  background-color: #d2e69e !important;
+background-color: #aa3b00 !important;
+color: white !important;
+font-weight: bold !important;
   width: 143px;
   transition: .2s;
   margin: 5px;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.75);
 }
 
 .nav li a:hover{
   text-decoration: underline;
   color: white !important;
-  background-color: #aa3b00 !important;
+  background-color: rgb(122, 255, 0) !important;
   box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
 }
 
@@ -74,6 +80,12 @@ h3{
 
 hr{
   border-top: 1px solid #d2e69e;
+}
+
+.well hr{
+  border-top: .5px solid rgb(136, 136, 136);
+  margin: 15px auto;
+  width: 70%;
 }
 
 table.dataTable tr:nth-child(even),
@@ -97,4 +109,37 @@ table.dataTable tr:nth-child(odd):hover{
     border: 0px solid white;
     box-shadow: 1px 1px 3px rgba(0,0,0,0.4);
     color: white;
+}
+
+#recommend{
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
+}
+
+.recommend_row{
+  flex-grow: 1;
+  margin: 0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+#recommend_good_1,
+#recommend_good_2,
+#recommend_good_3,
+#recommend_bad_1,
+#recommend_bad_2,
+#recommend_bad_3{
+  width: 250px;
+  margin: 0 auto;
+}
+
+#charts_2 div ul.nav{
+  margin: 0;
+  margin-bottom: 10px;
+  margin-top: -30px;
+  border-top: 0px;
+  border-bottom: 0px;
 }

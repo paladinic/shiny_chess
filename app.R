@@ -1,12 +1,27 @@
 # libs   --------------------------------------------------------------------
 library(dplyr)
+library(ggplot2)
 library(plotly)
 library(shiny)
 library(shinyjs)
 library(shinycssloaders)
 library(shinyWidgets)
 library(chess.com)
+library(rchess)
 # devtools::install_github("paladinic/r.chess.com",force = T)
+
+get_board = function(moves){
+  
+  ch = rchess::Chess$new()
+  moves = strsplit(moves," ; ")[[1]]
+  
+  for(i in 1:length(moves)){
+    ch$move(moves[i])
+  }
+  
+  ch$plot()
+  
+}
 
 TRY = function(x){
   tryCatch(x, error = function(e) NULL)
@@ -126,8 +141,7 @@ server <- function(input, output, session) {
       tagList(fluidRow(
         column(
           6,
-          uiOutput("date_type_filter_ui"),
-          plotlyOutput("games_and_time", height = "200px"),
+          br(),
           fluidRow(
             column(4,
                    plotlyOutput("overall_stats", height = "150px")),
@@ -135,7 +149,9 @@ server <- function(input, output, session) {
                    plotlyOutput("overall_stats_white", height = "150px")),
             column(4,
                    plotlyOutput("overall_stats_black", height = "150px"))
-          )
+          ),
+          plotlyOutput("games_and_time", height = "200px"),
+          uiOutput("date_type_filter_ui")
         ),
         column(6,
                plotlyOutput("score", height = "375px"))
@@ -151,49 +167,86 @@ server <- function(input, output, session) {
       tagList(br(),
               em("Enter a chess.com username."))
     } else{
-      sidebarLayout(
-        sidebarPanel(
-          h2("Filters"),
-          fluidRow(column(
-            6,
-            radioButtons(
-              inputId = "open_color",
-              label = "User Color",
-              choices = c("Black", "White"),
-              inline = T
-            )
-          ),
-          column(
-            6,
-            radioButtons(
-              inputId = "inc_opp",
-              label = "Opponent Moves",
-              choices = c("Exclude", "Include"),
-              inline = T
-            )
-          )),
-          sliderInput(
-            inputId = "open_depth",
-            label = "Moves Depth",
-            min = 1,
-            max = 5,
-            value = 2,
-            step = 1
-          ),
-          sliderInput(
-            inputId = "min_open",
-            label = "Minimum Moves",
-            min = 1,
-            max = 5,
-            value = 2,
-            step = 1
-          )
-        ),
-        mainPanel(
-          h3("Openings"),
-          plotlyOutput("openings", height = "300px")
-        )
-      )
+      
+      
+      tabsetPanel(type = "pills",
+                          tabPanel(
+                            "Openings",
+                            sidebarLayout(
+                              sidebarPanel(
+                                h2("Filters"),
+                                hr(),
+                                fluidRow(column(
+                                  6,
+                                  radioButtons(
+                                    inputId = "open_color",
+                                    label = "User Color",
+                                    choices = c("Black", "White"),
+                                    inline = T
+                                  )
+                                ),
+                                column(
+                                  6,
+                                  radioButtons(
+                                    inputId = "inc_opp",
+                                    label = "Opponent Moves",
+                                    choices = c("Exclude", "Include"),
+                                    inline = T
+                                  )
+                                )),
+                                hr(),
+                                sliderInput(
+                                  inputId = "open_depth",
+                                  label = "Moves Depth",
+                                  min = 1,
+                                  max = 5,
+                                  value = 2,
+                                  step = 1
+                                ),
+                                hr(),
+                                sliderInput(
+                                  inputId = "min_open",
+                                  label = "Minimum Games",
+                                  min = 1,
+                                  max = 5,
+                                  value = 2,
+                                  step = 1
+                                )
+                              ),
+                              mainPanel(plotlyOutput("openings", height = "300px"))
+                            )
+                          ),
+              tabPanel("Recommend",
+                       sidebarLayout(sidebarPanel(
+                         h2("Filters"),
+                         hr(),
+                         radioButtons(
+                             inputId = "open_color_rec",
+                             label = "User Color",
+                             choices = c("Black", "White"),
+                             inline = T
+                             ),
+                         hr(),
+                         sliderInput(
+                           inputId = "open_depth_rec",
+                           label = "Moves Depth",
+                           min = 1,
+                           max = 5,
+                           value = 2,
+                           step = 1
+                         ),
+                         hr(),
+                         sliderInput(
+                           inputId = "min_open_rec",
+                           label = "Minimum Games",
+                           min = 1,
+                           max = 5,
+                           value = 2,
+                           step = 1
+                         )
+                       ),
+                                     mainPanel(
+                                       uiOutput("recommend_ui")))))
     }
   })
 
@@ -483,6 +536,7 @@ server <- function(input, output, session) {
         marker = list(color = "white")
       ) %>%
       layout(
+        title = "Rating and Games",
         plot_bgcolor  = "rgba(0, 0, 0, 0)",
         paper_bgcolor = "rgba(0, 0, 0, 0)",
         fig_bgcolor   = "rgba(0, 0, 0, 0)",
@@ -635,6 +689,7 @@ server <- function(input, output, session) {
         offsetgroup = 1
       ) %>%
       layout(
+        title = "Seasonality",
         legend = list(x = 1.2),
         plot_bgcolor  = "rgba(0, 0, 0, 0)",
         paper_bgcolor = "rgba(0, 0, 0, 0)",
@@ -663,7 +718,299 @@ server <- function(input, output, session) {
   })
 
   # openings       ####
+  
+  openings = reactive({
+    
+    nth = input$open_depth_rec
+    df = filtered_data()
+    col = input$open_color_rec
+    opponent = "Include"
+    min_open = input$min_open_rec
+    
+    dt = df %>%
+      mutate(opening = apply(df, 1, function(game) {
+        color = game["color"]
+        moves = game["moves"]
+        moves = strsplit(moves, split = " ; ")[[1]]
+        
+        if (opponent == "Include") {
+          v = 1:nth
+        } else{
+          if (nth == 1) {
+            v = 1
+          } else{
+            if (color == "black") {
+              v = seq(2, nth + 3, 2)
+            } else{
+              v = seq(1, nth + 2, 2)
+            }
+          }
+        }
+        
+        moves = moves[v]
+        moves = paste0(moves, collapse = " ; ")
+        
+      })) %>%
+      group_by(opening, color) %>%
+      summarise(games = n(),
+                wins = sum(won)) %>%
+      mutate(win_rate = wins / games) %>%
+      filter(games >= min_open) %>%
+      arrange(desc(win_rate)) %>%
+      mutate(col = if_else(color == "white", "#ffec87", "#363636"))
+    
+    if (col == "White") {
+      dt = dt %>% filter(color == "white")
+    } else if (col == "Black") {
+      dt = dt %>% filter(color == "black")
+    }
+    
+    dt
+  })
+  
+  output$recommend_ui = renderUI({
+    tagList(
+      div(id = "recommend",
+            div(class="recommend_row",
+              uiOutput("recommend_good_1"),
+              uiOutput("recommend_good_2"),
+              uiOutput("recommend_good_3")
+            ),
+            div(class="recommend_row",
+              uiOutput("recommend_bad_1"),
+              uiOutput("recommend_bad_2"),
+              uiOutput("recommend_bad_3")
+            ))
+      )
+  }) 
+  
+  output$recommend_good_1 = renderUI({
+    opening = openings()$opening
+    rate = openings()$win_rate
+    
+    n = 1
+    if(length(opening) >= n){
+      tagList(
+        h4(paste0(n,". Best")),
+        p(paste0(
+          opening[n],
+          " - Color:",
+          input$open_color_rec,
+          " - Wins:",
+          rate[n]*100,"%"
+        )),
+        chessboardjsOutput(paste0("recommed_good_",n,"_plt"))
+      )
+    }else{NULL}
+  })
+  output$recommend_good_2 = renderUI({
+    opening = openings()$opening
+    rate = openings()$win_rate
+    
+    n = 2
+    if(length(opening) >= n){
+      tagList(
+        h4(paste0(n,". Best")),
+        p(paste0(
+          opening[n],
+          " - Color:",
+          input$open_color_rec,
+          " - Wins:",
+          rate[n]*100,"%"
+        )),
+        chessboardjsOutput(paste0("recommed_good_",n,"_plt"))
+      )
+    }else{NULL}
+  })
+  output$recommend_good_3 = renderUI({
+    opening = openings()$opening
+    rate = openings()$win_rate
+    
+    n = 3
+    if(length(opening) >= n){
+      tagList(
+        h4(paste0(n,". Best")),
+        p(paste0(
+          opening[n],
+          " - Color:",
+          input$open_color_rec,
+          " - Wins:",
+          rate[n]*100,"%"
+        )),
+        chessboardjsOutput(paste0("recommed_good_",n,"_plt"))
+      )
+    }else{NULL}
+  })
+  
+  output$recommend_bad_1 = renderUI({
+    opening = openings() %>%
+      arrange(desc(-win_rate)) 
+    rate = opening$win_rate
+    opening = opening$opening
+    
+    n = 3
+    if(length(opening) >= n){
+      tagList(
+        h4(paste0(4-n,". Worst")),
+        p(paste0(
+          opening[n],
+          " - Color:",
+          input$open_color_rec,
+          " - Wins:",
+          rate[n]*100,"%"
+        )),
+        chessboardjsOutput(paste0("recommed_bad_",n,"_plt"))
+      )
+    }else{NULL}
+  })
+  output$recommend_bad_2 = renderUI({
+    opening = openings() %>%
+      arrange(desc(-win_rate)) 
+    rate = opening$win_rate
+    opening = opening$opening
+    
+    n = 2
+    if(length(opening) >= n){
+      tagList(
+        h4(paste0(4-n,". Worst")),
+        p(paste0(
+          opening[n],
+          " - Color:",
+          input$open_color_rec,
+          " - Wins:",
+          rate[n]*100,"%"
+        )),
+        chessboardjsOutput(paste0("recommed_bad_",n,"_plt"))
+      )
+    }else{NULL}
+  })
+  output$recommend_bad_3 = renderUI({
+    opening = openings() %>%
+      arrange(desc(-win_rate)) 
+    rate = opening$win_rate
+    opening = opening$opening
+    
+    n = 1
+    if(length(opening) >= n){
+      tagList(
+        h4(paste0(4-n,". Worst")),
+        p(paste0(
+          opening[n],
+          " - Color:",
+          input$open_color_rec,
+          " - Wins:",
+          rate[n]*100,"%"
+        )),
+        chessboardjsOutput(paste0("recommed_bad_",n,"_plt"))
+      )
+    }else{NULL}
+  })
+  
+  output$recommed_good_1_plt = renderChessboardjs({
+    
+    
+    opening = openings() %>%
+      arrange(desc(win_rate)) %>%
+      pull(opening)
+    
+    n = 1
+    
+    if(length(opening) >= n){
+      
+      opening = opening[n]
+      
+      get_board(opening)
+      
+    }else{NULL}
+    
+  })
+  output$recommed_good_2_plt = renderChessboardjs({
+    
+    
+    opening = openings() %>%
+      arrange(desc(win_rate)) %>%
+      pull(opening)
+    
+    n = 2
+    
+    if(length(opening) >= n){
+  
+      opening = opening[n]
+      
+      get_board(opening)
+      
+    }else{NULL}
+    
+  })
+  output$recommed_good_3_plt = renderChessboardjs({
+    
+    
+    opening = openings() %>%
+      arrange(desc(win_rate)) %>%
+      pull(opening)
+    
+    n = 3
+    
+    if(length(opening) >= n){
+      
+      opening = opening[n]
+      
+      get_board(opening)
+      
+    }else{NULL}
+    
+  })
+  
+  output$recommed_bad_1_plt = renderChessboardjs({
+    
+    opening = openings() %>%
+      arrange(desc(-win_rate)) %>%
+      pull(opening)
+    n = 3
+    
+    if(length(opening) >= n){
 
+      
+      opening = opening[n]
+      
+      get_board(opening)
+      
+    }else{NULL}
+    
+  })
+  output$recommed_bad_2_plt = renderChessboardjs({
+    opening = openings() %>%
+      arrange(desc(-win_rate)) %>%
+      pull(opening)
+    n = 2
+    
+    if(length(opening) >= n){
+      
+      opening = opening[n]
+      
+      get_board(opening)
+      
+    }else{NULL}
+    
+  })
+  output$recommed_bad_3_plt = renderChessboardjs({
+    
+    opening = openings() %>%
+      arrange(desc(-win_rate)) %>%
+      pull(opening)
+    n = 1
+    
+    if(length(opening) >= n){
+      
+      
+      opening = opening[n]
+      
+      get_board(opening)
+      
+    }else{NULL}
+    
+  })
+  
   output$openings = renderPlotly({
     nth = input$open_depth
     df = filtered_data()
@@ -731,6 +1078,7 @@ server <- function(input, output, session) {
       ) %>%
       layout(yaxis2 = list(overlaying = "y", side = "right")) %>%
       layout(
+        title = "Openings",
         plot_bgcolor  = "rgba(0, 0, 0, 0)",
         paper_bgcolor = "rgba(0, 0, 0, 0)",
         fig_bgcolor   = "rgba(0, 0, 0, 0)",
