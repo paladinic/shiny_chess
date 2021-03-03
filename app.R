@@ -45,16 +45,15 @@ ui <- tagList(
   # HEADER ####
   fluidPage(
     # HTML("<img src='img/logo.png' width=20px>"),
-    fluidRow(
-      column(4,
-             br(),
+    div(
+      id="header",
+      div(br(),
              uiOutput("date_filter_ui")),
-      column(
-        4,
+      div(
         textInput(inputId = "username", label = "Username"),
         actionButton(inputId = "go", label = "Go")
       ),
-      column(4,
+      div(
              br(),
              uiOutput("game_type_filter_ui"))
     ),
@@ -182,6 +181,7 @@ server <- function(input, output, session) {
                                     inputId = "open_color",
                                     label = "User Color",
                                     choices = c("Black", "White"),
+                                    selected = "White",
                                     inline = T
                                   )
                                 ),
@@ -191,6 +191,7 @@ server <- function(input, output, session) {
                                     inputId = "inc_opp",
                                     label = "Opponent Moves",
                                     choices = c("Exclude", "Include"),
+                                    selected = "Include",
                                     inline = T
                                   )
                                 )),
@@ -199,8 +200,8 @@ server <- function(input, output, session) {
                                   inputId = "open_depth",
                                   label = "Moves Depth",
                                   min = 1,
-                                  max = 5,
-                                  value = 2,
+                                  max = 10,
+                                  value = 5,
                                   step = 1
                                 ),
                                 hr(),
@@ -208,12 +209,13 @@ server <- function(input, output, session) {
                                   inputId = "min_open",
                                   label = "Minimum Games",
                                   min = 1,
-                                  max = 5,
+                                  max = 10,
                                   value = 2,
                                   step = 1
                                 )
                               ),
-                              mainPanel(plotlyOutput("openings", height = "300px"))
+                              mainPanel(uiOutput("color_icon"),
+                                        plotlyOutput("openings", height = "300px"))
                             )
                           ),
               tabPanel("Recommend",
@@ -224,6 +226,7 @@ server <- function(input, output, session) {
                              inputId = "open_color_rec",
                              label = "User Color",
                              choices = c("Black", "White"),
+                             selected = "White",
                              inline = T
                              ),
                          hr(),
@@ -231,8 +234,8 @@ server <- function(input, output, session) {
                            inputId = "open_depth_rec",
                            label = "Moves Depth",
                            min = 1,
-                           max = 5,
-                           value = 2,
+                           max = 10,
+                           value = 5,
                            step = 1
                          ),
                          hr(),
@@ -240,12 +243,13 @@ server <- function(input, output, session) {
                            inputId = "min_open_rec",
                            label = "Minimum Games",
                            min = 1,
-                           max = 5,
+                           max = 10,
                            value = 2,
                            step = 1
                          )
                        ),
                                      mainPanel(
+                                       uiOutput("color_icon_rec"),
                                        uiOutput("recommend_ui")))))
     }
   })
@@ -849,15 +853,15 @@ server <- function(input, output, session) {
     opening = opening$opening
     
     n = 3
-    if(length(opening) >= n){
+    if(length(opening) >= 4-n){
       tagList(
         h4(paste0(4-n,". Worst")),
         p(paste0(
-          opening[n],
+          opening[4-n],
           " - Color:",
           input$open_color_rec,
           " - Wins:",
-          rate[n]*100,"%"
+          rate[4-n]*100,"%"
         )),
         chessboardjsOutput(paste0("recommed_bad_",n,"_plt"))
       )
@@ -870,15 +874,15 @@ server <- function(input, output, session) {
     opening = opening$opening
     
     n = 2
-    if(length(opening) >= n){
+    if(length(opening) >= 4-n){
       tagList(
         h4(paste0(4-n,". Worst")),
         p(paste0(
-          opening[n],
+          opening[4-n],
           " - Color:",
           input$open_color_rec,
           " - Wins:",
-          rate[n]*100,"%"
+          rate[4-n]*100,"%"
         )),
         chessboardjsOutput(paste0("recommed_bad_",n,"_plt"))
       )
@@ -891,15 +895,15 @@ server <- function(input, output, session) {
     opening = opening$opening
     
     n = 1
-    if(length(opening) >= n){
+    if(length(opening) >= 4-n){
       tagList(
         h4(paste0(4-n,". Worst")),
         p(paste0(
-          opening[n],
+          opening[4-n],
           " - Color:",
           input$open_color_rec,
           " - Wins:",
-          rate[n]*100,"%"
+          rate[4-n]*100,"%"
         )),
         chessboardjsOutput(paste0("recommed_bad_",n,"_plt"))
       )
@@ -1102,6 +1106,25 @@ server <- function(input, output, session) {
       )
 
   })
+  # color          ####
+  
+  
+  
+  output$color_icon = renderUI({
+    if(input$open_color == "Black"){
+      img(src="img/chess_icon_black.png",width="50px")
+    }else{
+      img(src="img/chess_icon_white.png",width="50px")
+    }
+  })
+  output$color_icon_rec = renderUI({
+    if(input$open_color_rec == "Black"){
+      img(src="img/chess_icon_black.png",width="50px")
+    }else{
+      img(src="img/chess_icon_white.png",width="50px")
+    }
+  })
+  
 }
 
 shinyApp(ui, server)

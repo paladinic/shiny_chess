@@ -4,13 +4,36 @@ body{
   text-align: center;
   font-family: Bitter;
   font-weight: 900;
+  padding-top: 100px;
+}
+
+#header{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  margin: auto;
+  flex-wrap: wrap;
+  padding-bottom: 20px;
+  justify-content: space-around;
+  background: rgb(4,37,0);
+  background: linear-gradient(180deg, rgba(5, 41, 0, 1) 10%, rgba(5, 41, 0, 0.88) 85%, rgba(0,255,24,0) 100%);
+  z-index: 1;
+}
+#header div{
+  /* width: 33%; */
+}
+
+.form-group{
+  margin: auto;
 }
 
 .form-group,
 #downloadData,
 button{
   display: block;
-  margin: 5px auto;
   width: 300px;
   font-weight: 900 !important;
   transition: .2s;
@@ -22,13 +45,18 @@ button{
   background-color: #aa3b00 !important;
   color: white !important;
   font-weight: bold !important;
-  box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    transition: .2s;
+    margin: 5px;
+    box-shadow: inset 0px -3px 0px rgba(0,0,0,0.5);
 }
 
 #downloadData:hover,
 button:hover{
   color: white !important;
-  background-color: rgb(122, 255, 0) !important;
+  background-color: #772c05 !important;
+  box-shadow: 0px !important;
+  margin-top: 6px;
+  margin-bottom: -1px;
 }
 
 .nav{
@@ -44,9 +72,11 @@ button:hover{
 
 
 .nav li.active a{
+  color: black !important;
   background-color: #d2e69e !important;
-  color:black !important;
-  font-weight: bold !important;
+  box-shadow: 0px !important;
+  margin-top: 6px;
+  margin-bottom: 4px;
 }
 
 .nav li a{
@@ -56,15 +86,19 @@ font-weight: bold !important;
   width: 143px;
   transition: .2s;
   margin: 5px;
-  box-shadow: 1px 1px 3px rgba(0,0,0,0.75);
+  box-shadow: inset 0px -3px 0px rgba(0,0,0,0.5);
 }
 
 .nav li a:hover{
   text-decoration: underline;
   color: white !important;
-  background-color: rgb(122, 255, 0) !important;
-  box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+  background-color: #772c05 !important;
+  box-shadow: 0px !important;
+  margin-top: 6px;
+  margin-bottom: 4px;
 }
+
+
 
 .well label,
 .well h2,
@@ -118,7 +152,7 @@ table.dataTable tr:nth-child(odd):hover{
 }
 
 .recommend_row{
-  flex-grow: 1;
+  width: 50%;
   margin: 0;
   padding: 10px;
   display: flex;
@@ -132,7 +166,8 @@ table.dataTable tr:nth-child(odd):hover{
 #recommend_bad_1,
 #recommend_bad_2,
 #recommend_bad_3{
-  width: 250px;
+  width: 100%;
+  height: 100% !important;
   margin: 0 auto;
 }
 
@@ -142,4 +177,27 @@ table.dataTable tr:nth-child(odd):hover{
   margin-top: -30px;
   border-top: 0px;
   border-bottom: 0px;
+}
+
+
+#color_icon_rec img,
+#color_icon img{
+  border-radius: 10%;
+  background: #aa3b00;
+  padding: 7px;
+  box-shadow: inset 0px -3px 0px rgba(0,0,0,0.5);
+  margin: 10px;
+  transition: .2s;
+}
+
+#color_icon_rec img:hover,
+#color_icon img:hover{
+  background-color: #772c05 !important;
+  margin: 11px 10px 9px;
+}
+
+@media only screen and (max-width: 600px) {
+  body{
+    padding-top: 300px;
+  }
 }
