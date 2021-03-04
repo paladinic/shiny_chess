@@ -196,7 +196,7 @@ table.dataTable tr:nth-child(odd):hover{
   margin: 11px 10px 9px;
 }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-device-width: 600px) {
   body{
     padding-top: 300px;
   }
