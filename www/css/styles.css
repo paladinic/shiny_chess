@@ -46,7 +46,7 @@ button{
   color: white !important;
   font-weight: bold !important;
     transition: .2s;
-    margin: 5px;
+    margin: 5px auto;
     box-shadow: inset 0px -3px 0px rgba(0,0,0,0.5);
 }
 
@@ -196,7 +196,11 @@ table.dataTable tr:nth-child(odd):hover{
   margin: 11px 10px 9px;
 }
 
-@media only screen and (max-device-width: 600px) {
+label:nth-child(1){
+  font-size: 1.2em !important;
+}
+
+@media only screen and (max-width : 640px) {
   body{
     padding-top: 300px;
   }

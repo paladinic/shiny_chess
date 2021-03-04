@@ -123,11 +123,21 @@ server <- function(input, output, session) {
     df = df[df$date <= dates[2],]
 
   })
-
+  current_rating = reactive({
+    req(filtered_data())
+    
+    ratings = filtered_data() %>% pull(user_rating)
+    
+    return(ratings[length(ratings)])
+    
+  })
+  
   # charts         #####
 
   font = list(color = "white",
               family = "Bitter")
+  
+
 
   output$charts_1 = renderUI({
     if (is.null(TRY({
@@ -153,7 +163,8 @@ server <- function(input, output, session) {
           uiOutput("date_type_filter_ui")
         ),
         column(6,
-               plotlyOutput("score", height = "375px"))
+               h3(paste0("Latest Rating: ",current_rating())),
+               plotlyOutput("score", height = "350px"))
 
       ))
     }
@@ -790,6 +801,7 @@ server <- function(input, output, session) {
   
   output$recommend_good_1 = renderUI({
     opening = openings()$opening
+    games = openings()$games
     rate = openings()$win_rate
     
     n = 1
@@ -797,18 +809,19 @@ server <- function(input, output, session) {
       tagList(
         h4(paste0(n,". Best")),
         p(paste0(
-          opening[n],
-          " - Color:",
-          input$open_color_rec,
-          " - Wins:",
-          rate[n]*100,"%"
-        )),
+          opening[n])),
+        p(paste0(
+          input$open_color_rec),
+          "Wins:",
+          round(rate[n]*100,2),"% (Games: ",games[n],")"
+        ),
         chessboardjsOutput(paste0("recommed_good_",n,"_plt"))
       )
     }else{NULL}
   })
   output$recommend_good_2 = renderUI({
     opening = openings()$opening
+    games = openings()$games
     rate = openings()$win_rate
     
     n = 2
@@ -816,18 +829,19 @@ server <- function(input, output, session) {
       tagList(
         h4(paste0(n,". Best")),
         p(paste0(
-          opening[n],
-          " - Color:",
-          input$open_color_rec,
-          " - Wins:",
-          rate[n]*100,"%"
-        )),
+          opening[n])),
+        p(paste0(
+          input$open_color_rec),
+          "Wins:",
+          round(rate[n]*100,2),"% (Games: ",games[n],")"
+        ),
         chessboardjsOutput(paste0("recommed_good_",n,"_plt"))
       )
     }else{NULL}
   })
   output$recommend_good_3 = renderUI({
     opening = openings()$opening
+    games = openings()$games
     rate = openings()$win_rate
     
     n = 3
@@ -835,12 +849,12 @@ server <- function(input, output, session) {
       tagList(
         h4(paste0(n,". Best")),
         p(paste0(
-          opening[n],
-          " - Color:",
-          input$open_color_rec,
-          " - Wins:",
-          rate[n]*100,"%"
-        )),
+          opening[n])),
+        p(paste0(
+          input$open_color_rec),
+          "Wins:",
+          round(rate[n]*100,2),"% (Games: ",games[n],")"
+        ),
         chessboardjsOutput(paste0("recommed_good_",n,"_plt"))
       )
     }else{NULL}
@@ -849,6 +863,7 @@ server <- function(input, output, session) {
   output$recommend_bad_1 = renderUI({
     opening = openings() %>%
       arrange(desc(-win_rate)) 
+    games = opening$games
     rate = opening$win_rate
     opening = opening$opening
     
@@ -857,11 +872,11 @@ server <- function(input, output, session) {
       tagList(
         h4(paste0(4-n,". Worst")),
         p(paste0(
-          opening[4-n],
-          " - Color:",
+          opening[4-n])),
+        p(paste0(
           input$open_color_rec,
-          " - Wins:",
-          rate[4-n]*100,"%"
+          "Wins:",
+          round(rate[4-n]*100,2),"% (Games: ",games[4-n],")"
         )),
         chessboardjsOutput(paste0("recommed_bad_",n,"_plt"))
       )
@@ -870,6 +885,7 @@ server <- function(input, output, session) {
   output$recommend_bad_2 = renderUI({
     opening = openings() %>%
       arrange(desc(-win_rate)) 
+    games = opening$games
     rate = opening$win_rate
     opening = opening$opening
     
@@ -878,11 +894,11 @@ server <- function(input, output, session) {
       tagList(
         h4(paste0(4-n,". Worst")),
         p(paste0(
-          opening[4-n],
-          " - Color:",
+          opening[4-n])),
+        p(paste0(
           input$open_color_rec,
-          " - Wins:",
-          rate[4-n]*100,"%"
+          "Wins:",
+          round(rate[4-n]*100,2),"% (Games: ",games[4-n],")"
         )),
         chessboardjsOutput(paste0("recommed_bad_",n,"_plt"))
       )
@@ -891,6 +907,7 @@ server <- function(input, output, session) {
   output$recommend_bad_3 = renderUI({
     opening = openings() %>%
       arrange(desc(-win_rate)) 
+    games = opening$games
     rate = opening$win_rate
     opening = opening$opening
     
@@ -899,11 +916,11 @@ server <- function(input, output, session) {
       tagList(
         h4(paste0(4-n,". Worst")),
         p(paste0(
-          opening[4-n],
-          " - Color:",
+          opening[4-n])),
+        p(paste0(
           input$open_color_rec,
-          " - Wins:",
-          rate[4-n]*100,"%"
+          "Wins:",
+          round(rate[4-n]*100,2),"% (Games: ",games[4-n],")"
         )),
         chessboardjsOutput(paste0("recommed_bad_",n,"_plt"))
       )
