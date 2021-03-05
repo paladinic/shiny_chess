@@ -584,9 +584,8 @@ server <- function(input, output, session) {
         font = font,
         legend = list(orientation = "h",   # show entries horizontally
                       xanchor = "center",  # use center of legend as anchor
-                      yanchor = "top",
                       x = 0.5,
-                      y = 1)
+                      y = 1.05)
       )%>% 
       config(displayModeBar = FALSE) %>%
       config(displaylogo = FALSE)
@@ -746,7 +745,7 @@ server <- function(input, output, session) {
         legend = list(orientation = "h",   # show entries horizontally
                       xanchor = "center",  # use center of legend as anchor
                       x = 0.5,
-                      y = 1)
+                      y = 1.05)
       )%>% 
       config(displayModeBar = FALSE) %>%
       config(displaylogo = FALSE)
@@ -1145,7 +1144,7 @@ server <- function(input, output, session) {
                       xanchor = "center",  # use center of legend as anchor
                       yanchor = "top",
                       x = 0.5,
-                      y = 1)
+                      y = 1.05)
       )%>% 
       config(displayModeBar = FALSE) %>%
       config(displaylogo = FALSE)
