@@ -50,7 +50,8 @@ ui <- tagList(
       div(br(),
              uiOutput("date_filter_ui")),
       div(
-        textInput(inputId = "username", label = "Username"),
+        strong(id="username_label","Username"),
+        textInput(inputId = "username", label = NULL),
         actionButton(inputId = "go", label = "Go")
       ),
       div(
@@ -179,7 +180,7 @@ server <- function(input, output, session) {
     } else{
       
       
-      tabsetPanel(type = "pills",
+      tabsetPanel(type = "pills",selected = "Recommend",
                           tabPanel(
                             "Openings",
                             sidebarLayout(
@@ -449,7 +450,10 @@ server <- function(input, output, session) {
         title = "Total",
         font = font,
         margin = list(l = 20, r = 20)
-      )
+      ) %>% 
+      config(displayModeBar = FALSE) %>%
+      config(displaylogo = FALSE)
+      
   })
   output$overall_stats_black = renderPlotly({
     draws = overall_stats_black()$draws
@@ -485,7 +489,9 @@ server <- function(input, output, session) {
         showlegend = FALSE,
         title = "Black",
         font = font
-      )
+      )%>% 
+      config(displayModeBar = FALSE) %>%
+      config(displaylogo = FALSE)
   })
   output$overall_stats_white = renderPlotly({
     draws = overall_stats_white()$draws
@@ -521,7 +527,9 @@ server <- function(input, output, session) {
         showlegend = FALSE,
         title = "White",
         font = font
-      )
+      )%>% 
+      config(displayModeBar = FALSE) %>%
+      config(displaylogo = FALSE)
   })
 
   # score          ####
@@ -574,7 +582,9 @@ server <- function(input, output, session) {
           automargin = T
         ),
         font = font
-      )
+      )%>% 
+      config(displayModeBar = FALSE) %>%
+      config(displaylogo = FALSE)
   })
 
   # games and time ####
@@ -728,7 +738,9 @@ server <- function(input, output, session) {
           rangemode = "tozero"
         ),
         font = font
-      )
+      )%>% 
+      config(displayModeBar = FALSE) %>%
+      config(displaylogo = FALSE)
 
   })
 
@@ -1120,7 +1132,9 @@ server <- function(input, output, session) {
           tickformat = "%"
         ),
         font = font
-      )
+      )%>% 
+      config(displayModeBar = FALSE) %>%
+      config(displaylogo = FALSE)
 
   })
   # color          ####

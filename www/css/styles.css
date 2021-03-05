@@ -196,8 +196,8 @@ table.dataTable tr:nth-child(odd):hover{
   margin: 11px 10px 9px;
 }
 
-label:nth-child(1){
-  font-size: 1.2em !important;
+#username_label{
+  font-size: 1.3em;
 }
 
 @media only screen and (max-width : 640px) {
