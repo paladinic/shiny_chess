@@ -581,7 +581,12 @@ server <- function(input, output, session) {
           title = "Games",
           automargin = T
         ),
-        font = font
+        font = font,
+        legend = list(orientation = "h",   # show entries horizontally
+                      xanchor = "center",  # use center of legend as anchor
+                      yanchor = "top",
+                      x = 0.5,
+                      y = 1)
       )%>% 
       config(displayModeBar = FALSE) %>%
       config(displaylogo = FALSE)
@@ -715,7 +720,7 @@ server <- function(input, output, session) {
       ) %>%
       layout(
         title = "Seasonality",
-        legend = list(x = 1.2),
+        # legend = list(x = 1.2),
         plot_bgcolor  = "rgba(0, 0, 0, 0)",
         paper_bgcolor = "rgba(0, 0, 0, 0)",
         fig_bgcolor   = "rgba(0, 0, 0, 0)",
@@ -737,7 +742,11 @@ server <- function(input, output, session) {
           tickformat = "%",
           rangemode = "tozero"
         ),
-        font = font
+        font = font,
+        legend = list(orientation = "h",   # show entries horizontally
+                      xanchor = "center",  # use center of legend as anchor
+                      x = 0.5,
+                      y = 1)
       )%>% 
       config(displayModeBar = FALSE) %>%
       config(displaylogo = FALSE)
@@ -1131,7 +1140,12 @@ server <- function(input, output, session) {
           title = "Win Rate",
           tickformat = "%"
         ),
-        font = font
+        font = font,
+        legend = list(orientation = "h",   # show entries horizontally
+                      xanchor = "center",  # use center of legend as anchor
+                      yanchor = "top",
+                      x = 0.5,
+                      y = 1)
       )%>% 
       config(displayModeBar = FALSE) %>%
       config(displaylogo = FALSE)

@@ -5,6 +5,6 @@ account: paladinic
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3614640
-bundleId: 4301808
+bundleId: 4303749
 url: https://paladinic.shinyapps.io/shiny_chess/
-when: 1614890288.35505
+when: 1614930725.57193
