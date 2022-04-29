@@ -138,8 +138,6 @@ server <- function(input, output, session) {
   font = list(color = "white",
               family = "Bitter")
   
-
-
   output$charts_1 = renderUI({
     if (is.null(TRY({
       user_data()
@@ -602,7 +600,7 @@ server <- function(input, output, session) {
       group_by(!!sym(time_group)) %>%
       summarise(wins = sum(won),
                 games = n()) %>%
-      mutate(win_rate = wins / games)
+      mutate(win_rate = round(wins / games,digits = 2))
 
     if (time_group == "weekday") {
       df$weekday = factor(
@@ -738,7 +736,7 @@ server <- function(input, output, session) {
         yaxis = list(
           showgrid = FALSE,
           title = "Win Rate",
-          tickformat = "%",
+          tickformat = "1%",
           rangemode = "tozero"
         ),
         font = font,
@@ -789,7 +787,7 @@ server <- function(input, output, session) {
       group_by(opening, color) %>%
       summarise(games = n(),
                 wins = sum(won)) %>%
-      mutate(win_rate = wins / games) %>%
+      mutate(win_rate = round(wins / games,digits = 2)) %>%
       filter(games >= min_open) %>%
       arrange(desc(win_rate)) %>%
       mutate(col = if_else(color == "white", "#ffec87", "#363636"))
@@ -1086,7 +1084,7 @@ server <- function(input, output, session) {
       group_by(opening, color) %>%
       summarise(games = n(),
                 wins = sum(won)) %>%
-      mutate(win_rate = wins / games) %>%
+      mutate(win_rate = round(wins / games,digits = 2)) %>%
       filter(games >= min_open) %>%
       arrange(desc(win_rate)) %>%
       mutate(col = if_else(color == "white", "#ffec87", "#363636"))
@@ -1137,7 +1135,7 @@ server <- function(input, output, session) {
           rangemode = "tozero",
           showgrid = FALSE,
           title = "Win Rate",
-          tickformat = "%"
+          tickformat = "1%"
         ),
         font = font,
         legend = list(orientation = "h",   # show entries horizontally
@@ -1146,7 +1144,7 @@ server <- function(input, output, session) {
                       x = 0.5,
                       y = 1.05)
       )%>% 
-      config(displayModeBar = FALSE) %>%
+      config(displayModeBar = T) %>%
       config(displaylogo = FALSE)
 
   })
