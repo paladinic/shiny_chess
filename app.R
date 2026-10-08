@@ -6,9 +6,7 @@ library(shiny)
 library(shinyjs)
 library(shinycssloaders)
 library(shinyWidgets)
-library(chess.com)
 library(rchess)
-# devtools::install_github("paladinic/r.chess.com",force = T)
 
 # chess.com API rejects (403) requests with the default httr/libcurl user agent
 httr::set_config(httr::user_agent("shiny-chess (https://github.com/paladinic/shiny_chess)"))
